@@ -24,9 +24,6 @@ models:
         description: The load that wrote this row.
       - name: _loaded_at
         description: When that load ran, UTC.
-      - name: _row_key
-        description: usage_date|api_key_id|deployment, one row per day/key/deployment after dedupe (DATA-102).
-        tests: [not_null, unique]
   - name: stg_m365_copilot_usage
     description: Cleaned Microsoft 365 Copilot usage, one row per day, user and app.
     columns:
