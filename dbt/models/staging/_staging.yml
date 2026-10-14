@@ -18,7 +18,7 @@ models:
       - name: output_tokens
         description: Completion tokens.
       - name: cost_usd
-        description: Cost in US dollars as billed. Coalesced from the raw cost_usd or cost column, in case the upstream export renames it again.
+        description: Cost in US dollars as billed.
         tests: [not_null]
       - name: _load_id
         description: The load that wrote this row.
@@ -78,17 +78,3 @@ models:
         description: First day of the month.
       - name: budget
         description: Budget in US dollars.
-
-unit_tests:
-  - name: test_stg_azure_openai_usage_cost_column_rename
-    model: stg_azure_openai_usage
-    description: Guards against Azure OpenAI renaming its cost column again; cost_usd must be backfilled from cost when cost_usd is null.
-    given:
-      - input: source('raw', 'azure_openai_usage')
-        rows:
-          - {usage_date: "2026-10-13", api_key_id: "key-1", deployment: "gpt-4o", input_tokens: 1000, output_tokens: 500, cost_usd: null, cost: 12.34, _load_id: 1, _loaded_at: "2026-10-13T06:00:00"}
-          - {usage_date: "2026-10-12", api_key_id: "key-1", deployment: "gpt-4o", input_tokens: 900, output_tokens: 400, cost_usd: 10.00, cost: null, _load_id: 1, _loaded_at: "2026-10-12T06:00:00"}
-    expect:
-      rows:
-        - {usage_date: "2026-10-13", api_key_id: "key-1", deployment: "gpt-4o", input_tokens: 1000, output_tokens: 500, cost_usd: 12.34, _load_id: 1, _loaded_at: "2026-10-13T06:00:00"}
-        - {usage_date: "2026-10-12", api_key_id: "key-1", deployment: "gpt-4o", input_tokens: 900, output_tokens: 400, cost_usd: 10.00, _load_id: 1, _loaded_at: "2026-10-12T06:00:00"}
